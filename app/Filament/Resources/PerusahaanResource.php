@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\JenisResource\Pages;
-use App\Filament\Resources\JenisResource\RelationManagers;
-use App\Models\Jenis;
+use App\Filament\Resources\PerusahaanResource\Pages;
+use App\Filament\Resources\PerusahaanResource\RelationManagers;
+use App\Models\Perusahaan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class JenisResource extends Resource
+class PerusahaanResource extends Resource
 {
-    protected static ?string $model = Jenis::class;
+    protected static ?string $model = Perusahaan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -25,7 +25,18 @@ class JenisResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nama')
                     ->required()
-                    ->maxLength(45),
+                    ->maxLength(100),
+                Forms\Components\Textarea::make('alamat')
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('telepon')
+                    ->tel()
+                    ->required()
+                    ->maxLength(20),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(100),
             ]);
     }
 
@@ -34,6 +45,10 @@ class JenisResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('telepon')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -62,7 +77,7 @@ class JenisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageJenis::route('/'),
+            'index' => Pages\ManagePerusahaans::route('/'),
         ];
     }
 }

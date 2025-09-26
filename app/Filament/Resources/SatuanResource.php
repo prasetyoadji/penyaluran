@@ -23,19 +23,9 @@ class SatuanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Satuan')
-                    ->description('Masukkan data satuan dengan benar agar tidak terjadi kesalahan dalam proses input.')
-                    ->schema([
-                        Forms\Components\TextInput::make('nama')
-                            ->label('Nama Satuan')
-                            ->placeholder('Contoh: kg, liter, karung')
-                            ->required()
-                            ->maxLength(8)
-                            ->prefixIcon('heroicon-o-scale') // icon sesuai konsep satuan
-                            ->helperText('Masukkan nama satuan, maksimal 8 karakter.')
-                            ->extraInputAttributes(['class' => 'text-lg font-semibold']), // custom style
-                    ])
-                    ->collapsible(), // UI rapi dengan collapsible section
+                Forms\Components\TextInput::make('nama')
+                    ->required()
+                    ->maxLength(8),
             ]);
     }
 

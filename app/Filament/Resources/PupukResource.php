@@ -6,6 +6,9 @@ use App\Filament\Resources\PupukResource\Pages;
 use App\Filament\Resources\PupukResource\RelationManagers;
 use App\Models\Pupuk;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,67 +26,97 @@ class PupukResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Produk')
-                    ->description('Isi data produk dengan lengkap dan benar.')
+                Section::make('Informasi Utama')
+                    ->description('Isi data pokok mengenai pupuk.')
+                    ->icon('heroicon-o-information-circle')
+                    ->collapsible()
                     ->schema([
-                        Forms\Components\Grid::make(2)->schema([ // Bagi jadi 2 kolom
+                        Grid::make(2)->schema([
                             Forms\Components\TextInput::make('nama')
-                                ->label('Nama Produk')
-                                ->placeholder('Contoh: Pupuk Urea')
-                                ->maxLength(45)
+                                ->label('Nama Pupuk')
+                                ->prefixIcon('heroicon-o-tag')
                                 ->required()
-                                ->prefixIcon('heroicon-o-cube')
-                                ->helperText('Masukkan nama produk maksimal 45 karakter.'),
+                                ->maxLength(60)
+                                ->helperText('Masukkan nama unik untuk pupuk ini.'),
 
                             Forms\Components\Select::make('jenis_id')
-                                ->label('Jenis Produk')
-                                ->relationship('jenis', 'nama') // ubah ke nama agar lebih readable
-                                ->required()
+                                ->label('Jenis')
+                                ->relationship('jenis', 'nama')
                                 ->searchable()
-                                ->placeholder('Pilih jenis produk')
+                                ->native(false)
+                                ->prefixIcon('heroicon-o-beaker')
+                                ->required()
+                                ->helperText('Pilih jenis pupuk.'),
+                        ]),
+
+                        Grid::make(2)->schema([
+                            Forms\Components\Select::make('satuan_id')
+                                ->label('Satuan')
+                                ->relationship('satuan', 'nama')
+                                ->searchable()
+                                ->native(false)
                                 ->preload()
-                                ->suffixIcon('heroicon-o-rectangle-stack'),
+                                ->prefixIcon('heroicon-o-scale')
+                                ->required()
+                                ->helperText('Pilih satuan yang sesuai.'),
+
+                            Forms\Components\Select::make('perusahaan_id')
+                                ->label('Perusahaan')
+                                ->relationship('perusahaan', 'nama')
+                                ->searchable()
+                                ->native(false)
+                                ->prefixIcon('heroicon-o-building-office')
+                                ->required()
+                                ->helperText('Pilih perusahaan pemasok pupuk.'),
                         ]),
                     ]),
 
-                Forms\Components\Section::make('Detail Produk')
-                    ->description('Tambahkan detail seperti stok, satuan, dan harga.')
+                Section::make('Detail Stok & Harga')
+                    ->description('Pengaturan jumlah stok, harga, dan keterangan tambahan.')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->collapsible()
                     ->schema([
-                        Forms\Components\Grid::make(3)->schema([
+                        Grid::make(3)->schema([
                             Forms\Components\TextInput::make('stok')
                                 ->label('Stok')
                                 ->numeric()
                                 ->default(0)
-                                ->required()
-                                ->prefixIcon('heroicon-o-archive-box'),
-
-                            Forms\Components\Select::make('satuan_id')
-                                ->label('Satuan')
-                                ->relationship('satuan', 'nama')
-                                ->required()
-                                ->searchable()
-                                ->placeholder('Pilih satuan')
-                                ->suffixIcon('heroicon-o-scale'),
+                                ->prefixIcon('heroicon-o-archive-box')
+                                ->required(),
 
                             Forms\Components\TextInput::make('harga')
                                 ->label('Harga')
                                 ->numeric()
-                                ->required()
-                                ->prefix('Rp ')
-                                ->prefixIcon('heroicon-o-currency-dollar')
-                                ->helperText('Masukkan harga dalam rupiah.'),
-                        ]),
-                    ]),
+                                ->prefixIcon('heroicon-o-banknotes')
+                                ->required(),
 
-                Forms\Components\Section::make('Deskripsi Produk')
-                    ->description('Berikan deskripsi lengkap tentang produk ini.')
-                    ->schema([
+                            Forms\Components\Toggle::make('is_active')
+                                ->label('Aktif?')
+                                ->helperText('Matikan jika produk tidak lagi tersedia.')
+                                ->inline(false),
+                        ]),
+
                         Forms\Components\Textarea::make('deskripsi')
                             ->label('Deskripsi')
-                            ->rows(4)
-                            ->placeholder('Tuliskan detail produk...')
-                            ->required()
-                            ->columnSpanFull(),
+                            ->rows(3)
+                            ->helperText('Tuliskan detail deskripsi pupuk.')
+                            ->columnSpanFull()
+                            ->required(),
+                    ]),
+
+                Section::make('Waktu Input')
+                    ->description('Informasi kapan data dibuat & diubah.')
+                    ->collapsible()
+                    ->schema([
+                        Grid::make(2)->schema([
+                            Placeholder::make('created_at')
+                                ->label('Dibuat pada')
+                                ->content(fn($record) => $record?->created_at?->format('d M Y H:i') ?? '-'),
+
+                            Placeholder::make('updated_at')
+                                ->label('Terakhir diperbarui')
+                                ->content(fn($record) => $record?->updated_at?->format('d M Y H:i') ?? '-'),
+                        ]),
                     ]),
             ]);
     }
@@ -93,30 +126,67 @@ class PupukResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('jenis.id')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable()
+                    ->icon('heroicon-o-tag')
+                    ->weight('bold'),
+
+                Tables\Columns\TextColumn::make('jenis.nama')
+                    ->label('Jenis')
+                    ->sortable()
+                    ->icon('heroicon-o-beaker'),
+
+                Tables\Columns\TextColumn::make('satuan.nama')
+                    ->label('Satuan')
+                    ->sortable()
+                    ->icon('heroicon-o-scale'),
+
+                Tables\Columns\TextColumn::make('perusahaan.nama')
+                    ->label('Perusahaan')
+                    ->sortable()
+                    ->icon('heroicon-o-building-office'),
+
                 Tables\Columns\TextColumn::make('stok')
+                    ->label('Stok')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('satuan.id')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn($state) => $state > 50 ? 'success' : ($state > 10 ? 'warning' : 'danger')),
+
                 Tables\Columns\TextColumn::make('harga')
-                    ->numeric()
+                    ->label('Harga')
+                    ->money('IDR')
                     ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Aktif')
+                    ->boolean(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diubah')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('jenis_id')
+                    ->label('Jenis')
+                    ->relationship('jenis', 'nama')
+                    ->searchable()
+                    ->native(false),
+
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Status Aktif')
+                    ->trueLabel('Aktif')
+                    ->falseLabel('Non-Aktif')
+                    ->placeholder('Semua'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

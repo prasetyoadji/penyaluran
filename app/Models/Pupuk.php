@@ -12,11 +12,19 @@ class Pupuk extends Model
     protected $fillable = [
         'nama',
         'jenis_id',
-        'stok',
         'satuan_id',
+        'stok',
         'deskripsi',
         'harga',
+        'is_active',
+        'perusahaan_id',
     ];
+
+    public function perusahaan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Perusahaan::class, 'perusahaan_id', 'id');
+    }
+
 
     public function satuan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -34,5 +42,4 @@ class Pupuk extends Model
     {
         return $this->hasMany(\App\Models\PengajuanDetail::class);
     }
-
 }

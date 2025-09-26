@@ -14,7 +14,9 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('pengajuan_id')->constrained('pengajuans')->cascadeOnDelete();
             $table->foreignId('pupuk_id')->constrained('pupuks')->cascadeOnDelete();
-            $table->unsignedMediumInteger('jumlah');
+            $table->unsignedBigInteger('jumlah');
+            $table->unsignedBigInteger('harga_satuan');
+            $table->unsignedBigInteger('subtotal');
             $table->unsignedBigInteger('total');
             $table->timestamps();
         });

@@ -14,10 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('pembeli_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('disetujui_oleh')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->date('tanggal_persetujuan')->nullable();
-            $table->string('status', 15)->default('menunggu');
-            $table->text('alasan_pengajuan');
+            $table->foreignId('perusahaan_id')->constrained('perusahaans')->cascadeOnDelete();
+            $table->string('status')->default('Menunggu');
+            $table->text('alasan');
             $table->text('alasan_penolakan')->nullable();
+            $table->date('tanggal_persetujuan')->nullable();
             $table->timestamps();
         });
     }

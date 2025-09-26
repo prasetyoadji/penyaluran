@@ -55,8 +55,13 @@ class User extends Authenticatable implements HasAvatar
         return $this->avatar_url ? Storage::url($this->avatar_url) : null;
     }
 
-    public function pengajuans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function pembelis(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(\App\Models\Pengajuan::class);
+        return $this->hasMany(\App\Models\Pengajuan::class, 'pembeli_id', 'id');
+    }
+
+    public function distujuiOlehs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\Pengajuan::class, 'disetujui_oleh', 'id');
     }
 }

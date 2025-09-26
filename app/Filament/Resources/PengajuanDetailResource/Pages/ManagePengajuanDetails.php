@@ -4,16 +4,16 @@ namespace App\Filament\Resources\PengajuanDetailResource\Pages;
 
 use App\Filament\Resources\PengajuanDetailResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
+use Filament\Resources\Pages\ManageRecords;
 
-class ViewPengajuanDetail extends ViewRecord
+class ManagePengajuanDetails extends ManageRecords
 {
     protected static string $resource = PengajuanDetailResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

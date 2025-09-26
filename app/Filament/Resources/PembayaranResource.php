@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PengajuanDetailResource\Pages;
-use App\Filament\Resources\PengajuanDetailResource\RelationManagers;
-use App\Models\PengajuanDetail;
+use App\Filament\Resources\PembayaranResource\Pages;
+use App\Filament\Resources\PembayaranResource\RelationManagers;
+use App\Models\Pembayaran;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PengajuanDetailResource extends Resource
+class PembayaranResource extends Resource
 {
-    protected static ?string $model = PengajuanDetail::class;
+    protected static ?string $model = Pembayaran::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,18 +23,20 @@ class PengajuanDetailResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('pengajuan_id')
-                    ->relationship('pengajuan', 'id')
+                Forms\Components\Select::make('transaksi_id')
+                    ->relationship('transaksi', 'id')
                     ->required(),
-                Forms\Components\Select::make('pupuk_id')
-                    ->relationship('pupuk', 'id')
-                    ->required(),
-                Forms\Components\TextInput::make('qty')
+                Forms\Components\TextInput::make('metode')
+                    ->required()
+                    ->maxLength(20),
+                Forms\Components\TextInput::make('jumlah_bayar')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('harga')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\DatePicker::make('tanggal_bayar')
+                    ->required(),
+                Forms\Components\FileUpload::make('bukti')
+                ->image()
+                    ->required(),
             ]);
     }
 
@@ -42,18 +44,19 @@ class PengajuanDetailResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('pengajuan.id')
+                Tables\Columns\TextColumn::make('transaksi.nomor_transaksi')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pupuk.id')
+                Tables\Columns\TextColumn::make('metode')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('jumlah_bayar')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('qty')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('tanggal_bayar')
+                    ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('harga')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\ImageColumn::make('bukti')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -69,6 +72,7 @@ class PengajuanDetailResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -77,20 +81,10 @@ class PengajuanDetailResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPengajuanDetails::route('/'),
-            'create' => Pages\CreatePengajuanDetail::route('/create'),
-            'view' => Pages\ViewPengajuanDetail::route('/{record}'),
-            'edit' => Pages\EditPengajuanDetail::route('/{record}/edit'),
+            'index' => Pages\ManagePembayarans::route('/'),
         ];
     }
 }

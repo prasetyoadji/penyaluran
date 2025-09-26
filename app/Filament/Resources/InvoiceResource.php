@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\JenisResource\Pages;
-use App\Filament\Resources\JenisResource\RelationManagers;
-use App\Models\Jenis;
+use App\Filament\Resources\InvoiceResource\Pages;
+use App\Filament\Resources\InvoiceResource\RelationManagers;
+use App\Models\Invoice;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class JenisResource extends Resource
+class InvoiceResource extends Resource
 {
-    protected static ?string $model = Jenis::class;
+    protected static ?string $model = Invoice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,9 +23,22 @@ class JenisResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama')
+                Forms\Components\Select::make('perusahaan_id')
+                    ->relationship('perusahaan', 'id')
+                    ->required(),
+                Forms\Components\Select::make('transaksi_id')
+                    ->relationship('transaksi', 'id')
+                    ->required(),
+                Forms\Components\TextInput::make('nomor_invoice')
                     ->required()
-                    ->maxLength(45),
+                    ->maxLength(30),
+                Forms\Components\DatePicker::make('tanggal_terbit')
+                    ->required(),
+                Forms\Components\Textarea::make('catatan')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('status')
+                    ->required()
+                    ->maxLength(20),
             ]);
     }
 
@@ -33,7 +46,18 @@ class JenisResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')
+                Tables\Columns\TextColumn::make('perusahaan.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('transaksi.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nomor_invoice')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tanggal_terbit')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -62,7 +86,7 @@ class JenisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageJenis::route('/'),
+            'index' => Pages\ManageInvoices::route('/'),
         ];
     }
 }

@@ -12,12 +12,14 @@ return new class extends Migration {
     {
         Schema::create('pupuks', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 45)->nullable();
+            $table->string('nama', 45);
             $table->foreignId('jenis_id')->constrained('jenis')->cascadeOnDelete();
-            $table->unsignedMediumInteger('stok')->default(0);
             $table->foreignId('satuan_id')->constrained('satuans')->cascadeOnDelete();
+            $table->foreignId('perusahaan_id')->constrained('perusahaans')->cascadeOnDelete();
+            $table->unsignedMediumInteger('stok')->default(0);
             $table->text('deskripsi');
             $table->unsignedBigInteger('harga');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

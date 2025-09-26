@@ -14,9 +14,16 @@ class Pengajuan extends Model
         'disetujui_oleh',
         'tanggal_persetujuan',
         'status',
-        'alasan_pengajuan',
         'alasan_penolakan',
+        'alasan',
+        'perusahaan_id',
     ];
+
+    public function perusahaan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Perusahaan::class, 'perusahaan_id', 'id');
+    }
+
 
     public function pembeli(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -26,6 +33,11 @@ class Pengajuan extends Model
     public function disetujuiOleh(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'disetujui_oleh', 'id');
+    }
+
+    public function transaksis(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\Transaksi::class);
     }
 
 

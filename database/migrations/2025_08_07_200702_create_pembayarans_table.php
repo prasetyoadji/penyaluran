@@ -10,9 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('jenis', function (Blueprint $table) {
+        Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 15);
+            $table->foreignId('transaksi_id')->constrained('transaksis')->cascadeOnDelete();
+            $table->string('metode', 20);
+            $table->unsignedBigInteger('jumlah_bayar');
+            $table->date('tanggal_bayar');
+            $table->string('bukti');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis');
+        Schema::dropIfExists('pembayarans');
     }
 };
