@@ -23,8 +23,20 @@ use Filament\Forms\Set;
 class PengajuanResource extends Resource
 {
     protected static ?string $model = Pengajuan::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Pengajuan & Pupuk';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-clipboard-document-check';
+    protected static ?int $navigationSort = 1;
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() < 2 ? 'danger' : 'info';
+    }
+    protected static ?string $navigationBadgeTooltip = 'Total Pengajuan';
+    protected static ?string $slug = 'pengajuan';
 
     public static function form(Form $form): Form
     {
@@ -48,7 +60,7 @@ class PengajuanResource extends Resource
                                                 ->preload()
                                                 ->required()
                                                 ->default(fn() => Auth::id())
-                                                ->hidden(fn() => Auth::user()?->hasRole('pelanggan')) // pelanggan tidak perlu pilih lagi
+                                                ->hidden(fn() => Auth::user()?->hasRole('Pelanggan')) // Pelanggan tidak perlu pilih lagi
                                                 ->disabled(fn() => Auth::user()?->hasRole('Administrator') === false) // admin bisa ubah
                                                 ->helperText('Pilih pembeli yang mengajukan.')
                                                 ->prefixIcon('heroicon-o-user'),
@@ -61,6 +73,9 @@ class PengajuanResource extends Resource
                                                 ->preload()
                                                 ->required()
                                                 ->helperText('Pilih perusahaan terkait pengajuan ini.')
+                                                ->default(Auth::user()->perusahaan_id)
+                                                ->disabled(fn() => Auth::user()?->hasRole('Administrator') === false) // admin bisa ubah
+                                                ->dehydrated()
                                                 ->prefixIcon('heroicon-o-building-office'),
                                         ]),
 
@@ -68,18 +83,19 @@ class PengajuanResource extends Resource
                                             Forms\Components\Select::make('disetujui_oleh')
                                                 ->label('Disetujui Oleh')
                                                 ->relationship('disetujuiOleh', 'name')
-                                                ->default(fn() => Auth::id())
+                                                ->default(Auth::user()->hasRole('Administrator') ? Auth::user()->id : null)
                                                 ->hidden(fn(Forms\Get $get) => $get('status') !== 'Disetujui')
-                                                ->disabled()
-                                                ->dehydrated(),
+                                                ->disabled(fn() => Auth::user()?->hasRole('Administrator') === false) // admin bisa ubah
+                                                ->dehydratedWhenHidden(),
 
                                             Forms\Components\DatePicker::make('tanggal_persetujuan')
                                                 ->label('Tanggal Persetujuan')
+                                                ->placeholder('Pilih Tanggal')
                                                 ->default(now())
                                                 ->native(false)
                                                 ->hidden(fn(Forms\Get $get) => $get('status') !== 'Disetujui')
-                                                ->disabled()
-                                                ->dehydrated(),
+                                                ->disabled(fn() => Auth::user()?->hasRole('Administrator') === false) // admin bisa ubah
+                                                ->dehydratedWhenHidden(),
                                         ]),
 
                                         Forms\Components\Select::make('status')
@@ -94,7 +110,7 @@ class PengajuanResource extends Resource
                                             ->required()
                                             ->reactive()
                                             ->prefixIcon('heroicon-o-adjustments-horizontal')
-                                            ->hidden(fn() => Auth::user()?->hasRole('pelanggan')),
+                                            ->hidden(fn() => Auth::user()?->hasRole('Pelanggan')),
                                     ]),
                             ]),
 
@@ -273,7 +289,7 @@ class PengajuanResource extends Resource
                                                             ->openable(),
                                                     ]),
                                             ])
-                                            ->hidden(fn() => Auth::user()?->hasRole('pelanggan')), // pelanggan tidak bisa ubah transaksi
+                                            ->hidden(fn() => Auth::user()?->hasRole('Pelanggan')), // Pelanggan tidak bisa ubah transaksi
                                     ]),
                             ]),
 

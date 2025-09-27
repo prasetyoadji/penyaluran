@@ -114,6 +114,16 @@ class UserResource extends Resource
                             ->maxLength(45)
                             ->autofocus(),
 
+                        Select::make('perusahaan_id')
+                            ->label('Perusahaan')
+                            ->placeholder('Pilih Perusahaan')
+                            ->relationship('perusahaan', 'nama')
+                            ->inlineLabel()
+                            ->columnSpanFull()
+                            ->preload()
+                            ->searchable()
+                            ->native(false),
+
                         TextInput::make('email')
                             ->label(__('filament-panels::pages/auth/edit-profile.form.email.label'))
                             ->placeholder(__('filament-panels::pages/auth/edit-profile.form.email.placeholder'))
@@ -154,13 +164,13 @@ class UserResource extends Resource
                             ->visible(fn(Get $get): bool => filled($get('password')))
                             ->dehydrated(false),
                     ])->columnSpan([
-                        'default' => fn(?User $record) => $record === null ? 3 : 3,
-                        'sm' => fn(?User $record) => $record === null ? 2 : 3,
-                        'md' => fn(?User $record) => $record === null ? 3 : 3,
-                        'lg' => fn(?User $record) => $record === null ? 4 : 4,
-                        'xl' => fn(?User $record) => $record === null ? 3 : 2,
-                        '2xl' => fn(?User $record) => $record === null ? 3 : 2,
-                    ])
+                            'default' => fn(?User $record) => $record === null ? 3 : 3,
+                            'sm' => fn(?User $record) => $record === null ? 2 : 3,
+                            'md' => fn(?User $record) => $record === null ? 3 : 3,
+                            'lg' => fn(?User $record) => $record === null ? 4 : 4,
+                            'xl' => fn(?User $record) => $record === null ? 3 : 2,
+                            '2xl' => fn(?User $record) => $record === null ? 3 : 2,
+                        ])
                     ->columns(2),
 
                 Section::make()
@@ -218,6 +228,10 @@ class UserResource extends Resource
                     ->separator(', ')
                     ->limitList(3)
                     ->wrap(),
+
+                TextColumn::make('perusahaan.nama')
+                    ->placeholder('Belum memiliki perusahaan')
+                    ->badge(),
             ])
             ->filters([
                 //

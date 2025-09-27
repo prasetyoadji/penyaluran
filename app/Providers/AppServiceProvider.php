@@ -7,7 +7,9 @@ use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\RoleResource;
 use App\Filament\Resources\UserResource;
+use App\Models\Pengajuan;
 use App\Models\Permission;
+use App\Observers\PengajuanObserver;
 use App\Observers\PermissionObserver;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -55,5 +57,7 @@ class AppServiceProvider extends ServiceProvider
                 PermissionResource::class,
             ]
         );
+
+        Pengajuan::observe(PengajuanObserver::class);
     }
 }

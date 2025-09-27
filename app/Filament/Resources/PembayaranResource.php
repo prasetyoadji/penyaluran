@@ -16,8 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PembayaranResource extends Resource
 {
     protected static ?string $model = Pembayaran::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $label = 'Riwayat Pembayaran';
+    protected static ?string $navigationGroup = 'Transaksi & Pembayaran';
+    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-credit-card';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
@@ -35,7 +38,7 @@ class PembayaranResource extends Resource
                 Forms\Components\DatePicker::make('tanggal_bayar')
                     ->required(),
                 Forms\Components\FileUpload::make('bukti')
-                ->image()
+                    ->image()
                     ->required(),
             ]);
     }

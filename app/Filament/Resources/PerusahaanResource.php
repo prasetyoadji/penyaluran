@@ -16,8 +16,24 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PerusahaanResource extends Resource
 {
     protected static ?string $model = Perusahaan::class;
+    protected static ?string $navigationGroup = 'Master Data';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-building-office';
+    protected static ?int $navigationSort = 1;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() < 2 ? 'danger' : 'info';
+    }
+
+    protected static ?string $navigationBadgeTooltip = 'Total Data Perusahaan';
+
+    protected static ?string $slug = 'perusahaan';
 
     public static function form(Form $form): Form
     {

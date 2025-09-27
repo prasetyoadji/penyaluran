@@ -16,8 +16,24 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
+    protected static ?string $navigationGroup = 'Transaksi & Pembayaran';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-document-text';
+    protected static ?int $navigationSort = 4;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::count() < 2 ? 'danger' : 'info';
+    }
+
+    protected static ?string $navigationBadgeTooltip = 'Total Invoice';
+
+    protected static ?string $slug = 'invoice';
 
     public static function form(Form $form): Form
     {

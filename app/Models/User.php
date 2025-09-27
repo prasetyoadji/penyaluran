@@ -24,6 +24,7 @@ class User extends Authenticatable implements HasAvatar
         'name',
         'email',
         'avatar_url',
+        'perusahaan_id',
         'password',
     ];
 
@@ -63,5 +64,10 @@ class User extends Authenticatable implements HasAvatar
     public function distujuiOlehs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Pengajuan::class, 'disetujui_oleh', 'id');
+    }
+
+    public function perusahaan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Perusahaan::class, 'perusahaan_id', 'id');
     }
 }

@@ -16,8 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class JenisResource extends Resource
 {
     protected static ?string $model = Jenis::class;
-
+    protected static ?string $navigationGroup = 'Master Data';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $activeNavigationIcon = 'heroicon-s-rectangle-stack';
+    protected static ?int $navigationSort = 2;
+
 
     public static function form(Form $form): Form
     {

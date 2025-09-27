@@ -39,4 +39,10 @@ class Perusahaan extends Model
         return $this->hasMany(\App\Models\Invoice::class);
     }
 
+
+    public function users(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\User::class);
+    }
+
 }
