@@ -63,6 +63,7 @@ class PengajuanResource extends Resource
                                                 ->hidden(fn() => Auth::user()?->hasRole('Pelanggan')) // Pelanggan tidak perlu pilih lagi
                                                 ->disabled(fn() => Auth::user()?->hasRole('Administrator') === false) // admin bisa ubah
                                                 ->helperText('Pilih pembeli yang mengajukan.')
+                                                ->dehydrated()
                                                 ->prefixIcon('heroicon-o-user'),
 
                                             Forms\Components\Select::make('perusahaan_id')
@@ -349,8 +350,8 @@ class PengajuanResource extends Resource
                     ->icon('heroicon-o-building-office')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('disetujui_oleh')
-                    ->label('ID Penyetuju')
+                Tables\Columns\TextColumn::make('disetujuiOleh.name')
+                    ->label('Penyetuju')
                     ->numeric()
                     ->sortable(),
 
@@ -399,6 +400,13 @@ class PengajuanResource extends Resource
                     ->native(false),
             ])
             ->actions([
+                Tables\Actions\Action::make('cetak_invoice')
+                    ->label('Cetak Invoice')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn($record) => route('pengajuan.invoice.pdf', $record))
+                    ->openUrlInNewTab()
+                    ->color('primary')
+                    ->visible(fn($record) => $record->status === 'Disetujui'),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])

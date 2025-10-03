@@ -62,10 +62,10 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('perusahaan.id')
+                Tables\Columns\TextColumn::make('perusahaan.nama')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transaksi.id')
+                Tables\Columns\TextColumn::make('transaksi.nomor_transaksi')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nomor_invoice')

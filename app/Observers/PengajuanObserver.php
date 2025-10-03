@@ -23,7 +23,7 @@ class PengajuanObserver
         // Setelah transaksi dibuat, buat invoice
         $transaksi->invoices()->create([
             'nomor_invoice' => 'INV-' . now()->format('YmdHis'),
-            'status' => 'Belum Lunas',
+            'status' => 'Belum Bayar',
             'tanggal_terbit' => now(),
             'perusahaan_id' => $pengajuan->perusahaan_id,
         ]);
@@ -34,18 +34,16 @@ class PengajuanObserver
      */
     public function updated(Pengajuan $pengajuan): void
     {
-        // Kalau status berubah jadi "Disetujui", buat invoice
         if ($pengajuan->isDirty('status') && $pengajuan->status === 'Disetujui') {
             // Cek apakah sudah ada invoice
-            if (!$pengajuan->invoice) {
-                Invoice::create([
-                    'pengajuan_id' => $pengajuan->id,
-                    'transaksi_id' => $pengajuan->transaksis()->latest()->first()?->id, // ambil transaksi terakhir
-                    'perusahaan_id' => $pengajuan->perusahaan_id,
-                    'total' => $pengajuan->grand_total ?? 0,
-                    'status' => 'Belum Lunas',
-                    'tanggal_invoice' => now(),
+            $transaksi = $pengajuan->transaksis()->latest()->first();
+
+            if ($transaksi && $transaksi->invoices()->count() === 0) {
+                $transaksi->invoices()->create([
                     'nomor_invoice' => 'INV-' . now()->format('YmdHis'),
+                    'status' => 'Selesai',
+                    'tanggal_terbit' => now(), // ✅ pakai tanggal_terbit
+                    'perusahaan_id' => $pengajuan->perusahaan_id,
                 ]);
             }
         }

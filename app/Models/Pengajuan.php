@@ -46,4 +46,9 @@ class Pengajuan extends Model
         return $this->hasMany(\App\Models\PengajuanDetail::class);
     }
 
+    public function invoice()
+    {
+        return $this->hasOne(\App\Models\Invoice::class);
+    }
+
 }
